@@ -1,7 +1,6 @@
 package com.plf.monitor.service;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.json.JSONUtil;
 import com.github.shyiko.mysql.binlog.BinaryLogClient;
 import com.github.shyiko.mysql.binlog.event.*;
 import com.github.shyiko.mysql.binlog.event.deserialization.EventDeserializer;
@@ -45,7 +44,6 @@ public class MonitorService {
         );
         client.setEventDeserializer(eventDeserializer);
         client.registerEventListener((event) -> {
-            log.info("获取Event数据:{}", JSONUtil.toJsonStr(event));
             EventData eventData = event.getData();
             if(eventData != null){
                 if(eventData instanceof UpdateRowsEventData){
@@ -62,8 +60,6 @@ public class MonitorService {
                     dealRowsQueryData(rowsQueryEventData);
                 }
             }
-
-
         });
         try {
             log.info("监听程序已经正常启动...");
@@ -94,6 +90,7 @@ public class MonitorService {
     }
 
     public void dealWriteData(WriteRowsEventData writeRowsEventData){
+        log.info("dealWriteData start deal data");
         if(writeRowsEventData!=null){
             List<Serializable[]> list =  writeRowsEventData.getRows();
             if(CollUtil.isNotEmpty(list)){
@@ -105,6 +102,8 @@ public class MonitorService {
     }
 
     public void dealDeleteData(DeleteRowsEventData deleteRowsEventData){
+        log.info("dealDeleteData start deal data");
+        log.info("delete data info:{}",deleteRowsEventData.toString());
         if(deleteRowsEventData!=null){
             List<Serializable[]> list =  deleteRowsEventData.getRows();
             if(CollUtil.isNotEmpty(list)){
@@ -115,6 +114,8 @@ public class MonitorService {
         }
     }
     public void dealUpdateData(UpdateRowsEventData updateRowsEventData){
+        log.info("dealUpdateData start deal data");
+        log.info("update data info:{}",updateRowsEventData.toString());
         if(updateRowsEventData!=null) {
             List<Map.Entry<Serializable[], Serializable[]>> list = updateRowsEventData.getRows();
             if (CollUtil.isNotEmpty(list)) {
